@@ -14,19 +14,18 @@ with open("instructions.json","r", encoding="utf-8") as file:
 
 system_instructions = json.dumps(dados_instrucao,indent=2,ensure_ascii=False)
 
-chat = client.chats.create(
-    model="gemini-2.5-flash",
-    config=types.GenerateContentConfig(
-        system_instruction=system_instructions,
-        temperature=1.7,
-        top_p=0.9,
-        top_k=50,
-        max_output_tokens=2048,
-    )
-)
-
 def generate_response(user_message,history):
     try:
+        chat = client.chats.create(
+        model="gemini-2.5-flash",
+        config=types.GenerateContentConfig(
+            system_instruction=system_instructions,
+            temperature=1.7,
+            top_p=0.9,
+            top_k=50,
+            max_output_tokens=2048,
+        )
+    )
         response = chat.send_message(user_message)
         return response.text
     except Exception as e:
@@ -34,10 +33,10 @@ def generate_response(user_message,history):
 
 demo = gr.ChatInterface(
     fn=generate_response,
-    title='Jarbas - O amado assistente Virtual',
-    description='Versão do nosso querido com o Gradio'
+    title='Sherlock',
+    description='Sherlock é o assistente detetive e você é o elementar caro Watson'
 )
 
 
 if __name__ == "__main__":
-    demo.launch()
+    demo.launch(share=True)
