@@ -7,8 +7,7 @@ from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_community.vectorstores import FAISS
 
 class RAGengine:
-    def __init__(self,pdf_paths,api_key):
-        self.api_key = api_key
+    def __init__(self,pdf_paths):
 
         # Indexação
         self.docs = []
@@ -29,7 +28,7 @@ class RAGengine:
 
         # Embeddings
         self.embeddings = HuggingFaceEmbeddings(
-            model="setence-transformers/all/MiniLM-l6-v2"
+            model="sentence-transformers/all-MiniLM-L6-v2"
         )
         # Armazenamento
         self.vector_store = FAISS.from_documents(

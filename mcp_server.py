@@ -8,7 +8,10 @@ load_dotenv()
 
 mcp = FastMCP("Servidor MCP Sherlock","0.1")
 
-arquivos_pdf = []
+arquivos_pdf = [
+    r"pdfs\797.pdf",
+    r"pdfs\Humanidades digitais e o mundo lusófono_ebook final_sobre autores atualizado.pdf"
+]
 
 print("Carregando RAG Engine", file=sys.stderr)
 
