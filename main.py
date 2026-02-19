@@ -4,19 +4,25 @@ from google import genai
 from dotenv import load_dotenv
 from google.genai import types
 import json
+from mcp.client.stdio import stdio_client
+from mcp import ClientSession, StdioServerParameters
 
 load_dotenv()
 
 client = genai.Client()
+
+server_params = StdioServerParameters(
+    command="python",
+    args= ["mcp_server.py"],
+    env=os.environ
+)
 
 with open("instructions.json","r", encoding="utf-8") as file:
     dados_instrucao = json.load(file)
 
 system_instructions = json.dumps(dados_instrucao,indent=2,ensure_ascii=False)
 
-def generate_response(user_message,history):
-    try:
-        chat = client.chats.create(
+chat = client.chats.create(
         model="gemini-2.5-flash",
         config=types.GenerateContentConfig(
             system_instruction=system_instructions,
@@ -26,6 +32,24 @@ def generate_response(user_message,history):
             max_output_tokens=2048,
         )
     )
+
+async def consultar_servidor_mcp(pergunta:str):
+    async with stdio_client(server_params) as (read, write):
+        async with ClientSession(read,write) as session:
+            
+            await session.initialize()
+
+            result = await session.call_tool(
+                "consultar_documentacao",
+                arguments={"pergunta":pergunta}
+            )
+
+            if result.content and len(result.content) > 0:
+                return result.content[0].text
+            return "Nenhuma informação encontrada"
+
+async def generate_response(user_message,history):
+    try:
         response = chat.send_message(user_message)
         return response.text
     except Exception as e:

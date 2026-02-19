@@ -1,4 +1,6 @@
 import os
+import sys
+from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
@@ -15,7 +17,9 @@ class RAGengine:
                 loader = PyPDFLoader(path)
                 self.docs.extend(loader.load())
             else:
-                print(f"Arquivo não encontrado: {path}")
+                print(f"Arquivo não encontrado: {path}",file=sys.stderr)
+
+        # TextSplitter
         self.text_splitter = RecursiveCharacterTextSplitter(
             chunk_size=1000,
             chunk_overlap=200,
@@ -24,17 +28,16 @@ class RAGengine:
         self.split = self.text_splitter.split_documents(self.docs)
 
         # Embeddings
-        self.embeddings = GoogleGenerativeAIEmbeddings(
-            model='models/gemini-embedding-001',
-            google_api_key=self.api_key
+        self.embeddings = HuggingFaceEmbeddings(
+            model="setence-transformers/all/MiniLM-l6-v2"
         )
-
         # Armazenamento
         self.vector_store = FAISS.from_documents(
             documents=self.split, embedding=self.embeddings
             )
+        # Retriever
         self.retriever = self.vector_store.as_retriever(search_kwargs={"k":3})
-        print("RAG Engine inicializado com sucesso.")
+        print("RAG Engine inicializado com sucesso.",file=sys.stderr)
 
     # Query
     def buscar_contexto(self,query):
