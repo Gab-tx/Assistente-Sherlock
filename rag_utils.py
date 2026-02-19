@@ -8,6 +8,7 @@ class RAGengine:
     def __init__(self,pdf_paths,api_key):
         self.api_key = api_key
 
+        # Indexação
         self.docs = []
         for path in pdf_paths:
             if os.path.exists(path):
@@ -22,17 +23,20 @@ class RAGengine:
 
         self.split = self.text_splitter.split_documents(self.docs)
 
+        # Embeddings
         self.embeddings = GoogleGenerativeAIEmbeddings(
             model='models/gemini-embedding-001',
             google_api_key=self.api_key
         )
 
+        # Armazenamento
         self.vector_store = FAISS.from_documents(
             documents=self.split, embedding=self.embeddings
             )
         self.retriever = self.vector_store.as_retriever(search_kwargs={"k":3})
         print("RAG Engine inicializado com sucesso.")
 
+    # Query
     def buscar_contexto(self,query):
         docs = self.retriever.invoke(query)
 
