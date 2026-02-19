@@ -50,7 +50,18 @@ async def consultar_servidor_mcp(pergunta:str):
 
 async def generate_response(user_message,history):
     try:
-        response = chat.send_message(user_message)
+        contexto_encontrado = await consultar_servidor_mcp(user_message)
+        
+        prompt = f"""
+        Mensagem usuário: 
+        {user_message}
+        
+        Contexto relevante:
+        {contexto_encontrado}
+
+        Responda à mensagem do usuário ultilizando o contexto encontrado, se necessário"""
+
+        response = chat.send_message(prompt)
         return response.text
     except Exception as e:
         print(e)
