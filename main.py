@@ -26,10 +26,10 @@ chat = client.chats.create(
         model="gemini-2.5-flash",
         config=types.GenerateContentConfig(
             system_instruction=system_instructions,
-            temperature=1.7,
+            temperature=0.6,
             top_p=0.9,
             top_k=50,
-            max_output_tokens=2048,
+            max_output_tokens=1024,
         )
     )
 
